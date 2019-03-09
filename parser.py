@@ -80,7 +80,7 @@ class PreProcess():
         output_data = []
         print("Printing data, ")
         print(data)
-        for i in range(len(data)):
+        for i in range(10):
             row_data = []
             txt_file = data[i][0].split('_')
             file_name = self.get_file_name(txt_file, data_type)
@@ -100,6 +100,8 @@ class PreProcess():
         @param: 
         @return: 
         """
+        table = {}
+
         knot_tying_data = self.parse_experimental_setup('Knot_tying')
         suturing_data = self.parse_experimental_setup('Suturing')
         needle_passing = self.parse_experimental_setup('Needle_passing')
@@ -107,14 +109,21 @@ class PreProcess():
         # Iterate through the knot_tying data
         kt_gest_class_data = self.read_data(knot_tying_data[0], 'Knot_Tying')
         kt_gest_rec_data = self.read_data(knot_tying_data[1], 'Knot_Tying')
-        print(kt_gest_class_data)
+        table['knot_tying'] = {'gesture_classification': kt_gest_class_data, 
+                               'gesture_recognition': kt_gest_rec_data}
+
         # Iterate through the suturing data
         sut_gest_class_data = self.read_data(suturing_data[0], 'Suturing')
         sut_gest_rec_data = self.read_data(suturing_data[1], 'Suturing')
         sut_skill_data = self.read_data(suturing_data[2], 'Suturing')
-        print(sut_skill_data)
-        print('done')
+        table['suturing'] = {'gesture_classification': sut_gest_class_data, 
+                               'gesture_recognition': sut_gest_rec_data,
+                               'skill_detection': sut_skill_data}
+
         # Iterate through the needle passing data
         np_gest_class_data = self.read_data(needle_passing[0], 'Needle_Passing')
         np_gest_rec_data = self.read_data(needle_passing[1], 'Needle_Passing')
-        print(np_gest_rec_data)
+        table['needle_passing'] = {'gesture_classification': np_gest_class_data, 
+                               'gesture_recognition': np_gest_rec_data}
+        
+        return table
