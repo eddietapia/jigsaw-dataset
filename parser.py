@@ -14,8 +14,33 @@ file_data = np.loadtxt('./Knot_Tying/kinematics/AllGestures/Knot_Tying_B001.txt'
 class PreProcess(): 
     def __init__(self, directory):
         self.directory = directory
-        
-    def parse_experimental_setup(data_type):
+    
+   
+    def get_from_labelType(directory, data_type, labels, leave_out):
+        '''
+        Helper function for parse_experiment setup
+        data_type: "Knot_Tying", "Suturing", "Needle_Passing"
+        Labels: "GestureClassification", "GestureRecognition", "SkillDetection"
+        Leave_out: "OneTrialOut", "SuperTrialOut", "UserOut"
+        '''
+        rootdir = os.path.join(directory, "Experimental_setup", data_type, "unBalanced", labels, leave_out)
+        output = None
+        if (labels == "SkillDetection"):
+            form = 'i4'
+        else:
+            form = 'U64'
+        for subdir, dirs, files in os.walk(rootdir):
+            for file in files:
+                f = os.path.join(subdir, file)           
+                if output is None:
+                    output = np.loadtxt(f, dtype={'names': ('fileName', 'gesture'), 
+                                             'formats': ('U64',  form)})
+                else:
+                    a = np.loadtxt(f, dtype={'names': ('fileName', 'gesture'), 
+                                             'formats': ('U64', form)})
+                    output = np.append(output, a)
+        return output
+    def parse_experimental_setup(data_type, leave_out="OneTrialOut"):
         '''
         Will iterate throught the experimental setup txt files
         @param data_type: will be either knot_tying, suturing, or needle_passing 
@@ -23,8 +48,14 @@ class PreProcess():
             1). Gesture classification 
             2). Gesture Recognition
             3). Skill detection
-        '''
-        pass
+        '''           
+        gClass = get_from_labelType(directory, data_type, "GestureClassification", leave_out)
+        gRec = get_from_labelType(directory, data_type, "GestureRecognition", leave_out)
+
+        if (data_type == "Suturing"):
+            skillDet = get_from_labelType(directory, data_type, "SkillDetection", leave_out)
+            return gClass, gRec, skillDet
+        return gClass, gRec
     
     def get_start_and_end(txt_file):
         # Gets rid of '.txt' for the end of the row
