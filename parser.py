@@ -1,16 +1,3 @@
-# Read in the filenames and 
-with open('./Experimental_setup/Knot_Tying/Balanced/GestureClassification/OneTrialOut/10_Out/itr_1/Train.txt') as f:
-     file_names = f.readlines()
-file_data = np.loadtxt('./Knot_Tying/kinematics/AllGestures/Knot_Tying_B001.txt')
-
-
-import numpy as np
-
-# Read in the filenames and 
-with open('./Experimental_setup/Knot_Tying/Balanced/GestureClassification/OneTrialOut/10_Out/itr_1/Train.txt') as f:
-     file_names = f.readlines()
-file_data = np.loadtxt('./Knot_Tying/kinematics/AllGestures/Knot_Tying_B001.txt')
-
 import numpy as np
 import os 
 # Read in the filenames and 
@@ -65,15 +52,15 @@ class PreProcess():
         return gClass, gRec
     
     
-    def get_start_and_end(txt_file):
+    def get_start_and_end(self, txt_file):
         # Gets rid of '.txt' for the end of the row
         txt_file[4] = txt_file[4][0:-4]
-        return txt_file[3], txt_file[4]
+        return int(txt_file[3]), int(txt_file[4])
 
-    def get_file_name(txt_file):
+    def get_file_name(self, txt_file):
         return txt_file[0] + '_' + txt_file[1] + '_' + txt_file[2] + '.txt'
     
-    def read_data(data, data_type):
+    def read_data(self, data, data_type):
         """
         Will read the data by it's appropriate line number
         @param data: a numpy array of size two containing a txt file name & 
@@ -82,11 +69,13 @@ class PreProcess():
         @return output_data: the correct time series data
         """
         output_data = []
+        print("Printing data, ")
+        print(data)
         for i in range(len(data)):
             row_data = []
             txt_file = data[i][0].split('_')
-            file_name = get_file_name(txt_file)
-            row_start, row_end = get_start_and_end(txt_file)
+            file_name = self.get_file_name(txt_file)
+            row_start, row_end = self.get_start_and_end(txt_file)
             with open('./' + data_type + '/kinematics/AllGestures/' + file_name) as f:
                 rows = f.readlines()
             for j in range(row_start, row_end):
@@ -107,15 +96,14 @@ class PreProcess():
         needle_passing = self.parse_experimental_setup('Needle_passing')
         
         # Iterate through the knot_tying data
-        kt_gest_class_data = read_data(knot_tying_data[0], 'Knot_Tying')
-        kt_gest_rec_data = read_data(knot_tying_data[1], 'Knot_Tying')
+        kt_gest_class_data = self.read_data(knot_tying_data[0], 'Knot_Tying')
+        kt_gest_rec_data = self.read_data(knot_tying_data[1], 'Knot_Tying')
         print(kt_gest_class_data)
         # Iterate through the suturing data
-        sut_gest_class_data = read_data(suturing_data[0], 'Suturing')
-        sut_gest_rec_data = read_data(suturing_data[1], 'Suturing')
-        sut_skill_data = read_data(suturing_data[2], 'Suturing')
+        sut_gest_class_data = self.read_data(suturing_data[0], 'Suturing')
+        sut_gest_rec_data = self.read_data(suturing_data[1], 'Suturing')
+        sut_skill_data = self.read_data(suturing_data[2], 'Suturing')
         
         # Iterate through the needle passing data
-        np_gest_class_data = read_data(needle_passing[0], 'Needle_Passing')
-        np_gest_rec_data = read_data(suturing_data[1], 'Needle_Passing')
-        
+        np_gest_class_data = self.read_data(needle_passing[0], 'Needle_Passing')
+        np_gest_rec_data = self.read_data(suturing_data[1], 'Needle_Passing')
