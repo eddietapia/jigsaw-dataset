@@ -52,12 +52,21 @@ class PreProcess():
         return gClass, gRec
     
     
-    def get_start_and_end(self, txt_file):
-        # Gets rid of '.txt' for the end of the row
-        txt_file[4] = txt_file[4][0:-4]
-        return int(txt_file[3]), int(txt_file[4])
+    def get_start_and_end(self, txt_file, data_type):
+        try:
+            # Gets rid of '.txt' for the end of the row
+            if data_type == 'Suturing':
+                txt_file[3] = txt_file[3][0:-4]
+                return int(txt_file[2]), int(txt_file[3])
+            txt_file[4] = txt_file[4][0:-4]
+            return int(txt_file[3]), int(txt_file[4])
+        except IndexError as error:
+            print(error)
+            print('Text file', txt_file, data_type)
 
-    def get_file_name(self, txt_file):
+    def get_file_name(self, txt_file, data_type):
+        if data_type == 'Suturing':
+            return txt_file[0] + '_' + txt_file[1] + '.txt'
         return txt_file[0] + '_' + txt_file[1] + '_' + txt_file[2] + '.txt'
     
     def read_data(self, data, data_type):
@@ -74,8 +83,8 @@ class PreProcess():
         for i in range(len(data)):
             row_data = []
             txt_file = data[i][0].split('_')
-            file_name = self.get_file_name(txt_file)
-            row_start, row_end = self.get_start_and_end(txt_file)
+            file_name = self.get_file_name(txt_file, data_type)
+            row_start, row_end = self.get_start_and_end(txt_file, data_type)
             with open('./' + data_type + '/kinematics/AllGestures/' + file_name) as f:
                 rows = f.readlines()
             for j in range(row_start, row_end):
@@ -103,7 +112,9 @@ class PreProcess():
         sut_gest_class_data = self.read_data(suturing_data[0], 'Suturing')
         sut_gest_rec_data = self.read_data(suturing_data[1], 'Suturing')
         sut_skill_data = self.read_data(suturing_data[2], 'Suturing')
-        
+        print(sut_skill_data)
+        print('done')
         # Iterate through the needle passing data
         np_gest_class_data = self.read_data(needle_passing[0], 'Needle_Passing')
-        np_gest_rec_data = self.read_data(suturing_data[1], 'Needle_Passing')
+        np_gest_rec_data = self.read_data(needle_passing[1], 'Needle_Passing')
+        print(np_gest_rec_data)
