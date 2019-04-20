@@ -91,13 +91,13 @@ def zNorm(data):
 @parameter windowSize: the size of the window that we want for the time
 """
 
-def jigDataSplit(train_x, train_y, stepSize, windowSize):
+def jigDataSplit(train_x, train_y, stepSize, windowSize, num_trials):
   train_x_new = []
   train_y_new = []
   #n = count of new trials
   n = 0
-  #for each of the 40 trials
-  for i in range(40):
+  #for each of the trials
+  for i in range(num_trials):
     #m = the index of the row we are at within the current trial
     m = 0
     #check if we have reached the end of the rows for the trial
@@ -208,8 +208,43 @@ train_y_classification = np.array(data['Class_Value'])
 #print(train_y_classification)
 
 
+
+
+
+
 newX = zNorm(train_x_ts_data);
-(x,y) = jigDataSplit(newX, train_y_classification, 30, 60)
+newY=np.ndarray.tolist(train_y_classification);
+#split here into
+
+#Training trials
+trainingX = [];
+trainingY = [];
+
+for i in range(len(newX)-4):
+  trainingX.append(newX[i]);
+  trainingY.append(newY[i]);
+  
+#Testing trials
+testingX = [];
+testingY = [];
+for i in range(4):
+  testingX.append(newX[len(newX)-4+i]);
+  testingY.append(newY[len(newY)-4+i]);
+
+
+
+
+trainingY = np.asarray(trainingY);
+testingY = np.asarray(testingY);
+
+
+#print(trainingY.shape)
+#print(testingY.shape)
+#TODO split train_y_classification  
+  
+  
+(trX,trY) = jigDataSplit(trainingX, trainingY, 30, 60, 36)
+(tsX,tsY) = jigDataSplit(testingX, testingY, 30, 60, 4)
 
 
 
@@ -230,8 +265,6 @@ np.save('output1_y', y)
 
 #https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html
 
-
-
 # Imports
 import numpy as np
 import tensorflow as tf
@@ -241,11 +274,15 @@ from tensorflow.contrib.layers import conv2d, max_pool2d, fully_connected, flatt
 #import tensorflow.nn.softmax
 from tensorflow.losses import softmax_cross_entropy
 from tensorflow.train import AdamOptimizer
+from datetime import datetime
 
-data_x = x
-data_y =y 
+data_x = trX
+data_y = trY
 train_x = np.array(data_x)
 train_y = np.array(data_y)
+
+test_x = np.array(tsX)
+test_y = np.array(tsY)
 #train_y = np.transpose(train_y)
 
 #data = data[()]
@@ -260,6 +297,13 @@ for i in range(len(train_x)):
    samples[i] = np.array(train_x[i])
    #print(samples[i].shape)
 #print(samples[2])
+
+print(type(train_x))
+print(type(train_y))
+print(train_x.shape)
+print(train_x[10].shape)
+print(train_y[1])
+print(test_x.shape)
 
 !wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
 !unzip ngrok-stable-linux-amd64.zip
@@ -326,7 +370,9 @@ net = CNN_Wang_Fey(opt)
 
 with tf.Session() as sess:
     merge = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter( './log', sess.graph)
+    now = datetime.now()
+    train_writer = tf.summary.FileWriter( './log/' + now.strftime("%Y%m%d-%H%M%S") + "/train", sess.graph)
+    test_writer = tf.summary.FileWriter('./log/' + now.strftime("%Y%m%d-%H%M%S") + "/test")
     
     # Run the initializer
     sess.run(tf.global_variables_initializer())
@@ -339,13 +385,16 @@ with tf.Session() as sess:
       
       summary, _ = sess.run([merge, net.apply_grads], feed_dict={net.X: train_x, net.Y: train_y})
       train_writer.add_summary(summary, epoch)
-        # Display logs per epoch step
+       
+      # Display logs per epoch step
       if (epoch+1) % display_step == 0:
         c = sess.run(net.loss, feed_dict={net.X: train_x, net.Y: train_y})
-        #print("Epoch:", '%04d' % (epoch+1), "cost=", "{%f}" % c) 
         acc = sess.run(net.accuracy, feed_dict={net.X: train_x, net.Y: train_y})
-        print("Epoch:", '%04d' % (epoch+1), "cost=", "{%f}" % c, "accuracy=", "{%f}" % acc) 
-            # \"W=", sess.run(W), "b=", sess.run(b))
+        
+        summary_test, acc2 = sess.run([merge, net.accuracy], feed_dict={net.X: test_x, net.Y:test_y})
+        test_writer.add_summary(summary_test, epoch)
+        print("Epoch:", '%04d' % (epoch+1), "cost=", "{%f}" % c, "accuracy=", "{%f}" % acc, "test_accuracy", "{%f}" % test_acc) 
+    
 
     print("Optimization Finished!")
 
