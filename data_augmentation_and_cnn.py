@@ -193,9 +193,64 @@ train_y_classification = np.array(data['Class_Value'])
 #print('SAMPLE[0][0]',train_x_ts_data[0][0])
 #print('Class[0]',train_y_classification[0])
 
+#take data, Znorm
+#split into windows
+#save as npy object
+
+
+
+#print('Trials[0][0]',data[0][0])
+#print('Class[0]',train_y_classification[0])
+#print('Avgs[0]',Avgs[0])
+#print('NewData[0]',zNorm([[[1,2,3,4],[76,55,44,21]],[[93,46,102,75],[74,33,51,935]],[[0,214,241,122],[150,151,251,500]]]))
+#print('SDevs[0]',SDevs[0])
+#print('NewData:',newData)
+#print(train_y_classification)
+
+
+
+
+
 
 newX = zNorm(train_x_ts_data);
-(x,y) = jigDataSplit(newX, train_y_classification, 30, 60)
+newY=np.ndarray.tolist(train_y_classification);
+#split here into
+
+#Training trials
+trainingX = [];
+trainingY = [];
+
+for i in range(len(newX)-4):
+  trainingX.append(newX[i]);
+  trainingY.append(newY[i]);
+  
+#Testing trials
+testingX = [];
+testingY = [];
+for i in range(4):
+  testingX.append(newX[len(newX)-4+i]);
+  testingY.append(newY[len(newY)-4+i]);
+
+
+
+
+trainingY = np.asarray(trainingY);
+testingY = np.asarray(testingY);
+
+
+print(trainingY.shape)
+print(testingY.shape)
+#TODO split train_y_classification  
+  
+  
+(trX,trY) = jigDataSplit(trainingX, trainingY, 30, 60, 36)
+(tsX,tsY) = jigDataSplit(testingX, testingY, 30, 60, 4)
+
+
+
+#print('Features', x.shape)
+#print('Class_Value', y.shape)
+#print(y)
 
 #save (x,y) tuple into .npy objects
 outFile1 = TemporaryFile()
