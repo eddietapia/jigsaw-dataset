@@ -91,13 +91,21 @@ def zNorm(data):
 @parameter windowSize: the size of the window that we want for the time
 """
 
+<<<<<<< HEAD
 def jigDataSplit(train_x, train_y, stepSize, windowSize, num_trials):
+=======
+def jigDataSplit(train_x, train_y, stepSize, windowSize, numTrials):
+>>>>>>> master
   train_x_new = []
   train_y_new = []
   #n = count of new trials
   n = 0
   #for each of the trials
+<<<<<<< HEAD
   for i in range(num_trials):
+=======
+  for i in range(numTrials):
+>>>>>>> master
     #m = the index of the row we are at within the current trial
     m = 0
     #check if we have reached the end of the rows for the trial
@@ -238,8 +246,13 @@ trainingY = np.asarray(trainingY);
 testingY = np.asarray(testingY);
 
 
+<<<<<<< HEAD
 #print(trainingY.shape)
 #print(testingY.shape)
+=======
+print(trainingY.shape)
+print(testingY.shape)
+>>>>>>> master
 #TODO split train_y_classification  
   
   
@@ -280,6 +293,7 @@ data_x = trX
 data_y = trY
 train_x = np.array(data_x)
 train_y = np.array(data_y)
+<<<<<<< HEAD
 
 test_x = np.array(tsX)
 test_y = np.array(tsY)
@@ -291,12 +305,12 @@ test_y = np.array(tsY)
 #print(train_x.shape)
 #print(train_y.shape)
 
+=======
+>>>>>>> master
 
 samples = train_x
 for i in range(len(train_x)):
    samples[i] = np.array(train_x[i])
-   #print(samples[i].shape)
-#print(samples[2])
 
 print(type(train_x))
 print(type(train_y))
