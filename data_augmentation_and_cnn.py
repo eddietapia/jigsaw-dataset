@@ -91,13 +91,13 @@ def zNorm(data):
 @parameter windowSize: the size of the window that we want for the time
 """
 
-def jigDataSplit(train_x, train_y, stepSize, windowSize):
+def jigDataSplit(train_x, train_y, stepSize, windowSize, numTrials):
   train_x_new = []
   train_y_new = []
   #n = count of new trials
   n = 0
-  #for each of the 40 trials
-  for i in range(40):
+  #for each of the trials
+  for i in range(numTrials):
     #m = the index of the row we are at within the current trial
     m = 0
     #check if we have reached the end of the rows for the trial
