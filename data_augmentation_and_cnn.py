@@ -57,7 +57,7 @@ def zNorm(data):
 
   #divide by lens
   for x in range (len(Variances)):
-    SDevs[x]=np.sqrt(Variances[x]/NumEles);  #https://docs.scipy.org/doc/numpy/reference/generated/numpy.sqrt.html
+    SDevs[x]=np.sqrt(Variances[x]/NumEles)+.000000001;  #https://docs.scipy.org/doc/numpy/reference/generated/numpy.sqrt.html
   newData=[];
   for x in range(len(data)):
     newData.append(data[x]); #https://stackoverflow.com/questions/6431973/how-to-copy-data-from-a-numpy-array-to-another
