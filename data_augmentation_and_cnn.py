@@ -55,9 +55,12 @@ def zNorm(data):
         #add to devs
         Variances[FeatureNum]+=(((float)(timeStep[FeatureNum]))-Avgs[FeatureNum])*(((float)(timeStep[FeatureNum]))-Avgs[FeatureNum]);
 
+  #TODO assuming NumEles is not 0 because if so, we have other problems
+
   #divide by lens
   for x in range (len(Variances)):
     SDevs[x]=np.sqrt(Variances[x]/NumEles)+.000000001;  #https://docs.scipy.org/doc/numpy/reference/generated/numpy.sqrt.html
+  #TODO tune the .00000001 number if needed
   newData=[];
   for x in range(len(data)):
     newData.append(data[x]); #https://stackoverflow.com/questions/6431973/how-to-copy-data-from-a-numpy-array-to-another
@@ -91,21 +94,15 @@ def zNorm(data):
 @parameter windowSize: the size of the window that we want for the time
 """
 
-<<<<<<< HEAD
 def jigDataSplit(train_x, train_y, stepSize, windowSize, num_trials):
-=======
-def jigDataSplit(train_x, train_y, stepSize, windowSize, numTrials):
->>>>>>> master
   train_x_new = []
   train_y_new = []
   #n = count of new trials
   n = 0
   #for each of the trials
-<<<<<<< HEAD
-  for i in range(num_trials):
-=======
-  for i in range(numTrials):
->>>>>>> master
+    #check if we have reached the end of the rows for the trial
+    #create a new trial of length windowSize
+  for i in range (num_trials):
     #m = the index of the row we are at within the current trial
     m = 0
     #check if we have reached the end of the rows for the trial
@@ -114,7 +111,7 @@ def jigDataSplit(train_x, train_y, stepSize, windowSize, numTrials):
       new_trial = []
       for j in range(windowSize):
         new_trial.append(train_x[i][j])
-      #add new trial to the new testing dataset
+        #add new trial to the new testing dataset
       train_x_new.append(new_trial)
       #classify the new trial with the pre-existing classification
       train_y_new.append(train_y[i])
@@ -156,7 +153,7 @@ def splitMasterPatient(train_x, train_y, windowSize):
   return (new_train_x)
   new_train_y = []
   for classification in train_y:
-    new_train_y.append([classicication, classification])
+    new_train_y.append([classification, classification])
   master_data = []
   master_classes = []
   patient_data = []
@@ -246,14 +243,9 @@ trainingY = np.asarray(trainingY);
 testingY = np.asarray(testingY);
 
 
-<<<<<<< HEAD
-#print(trainingY.shape)
-#print(testingY.shape)
-=======
 print(trainingY.shape)
 print(testingY.shape)
->>>>>>> master
-#TODO split train_y_classification  
+#split train_y_classification  
   
   
 (trX,trY) = jigDataSplit(trainingX, trainingY, 30, 60, 36)
@@ -267,10 +259,18 @@ print(testingY.shape)
 
 #save (x,y) tuple into .npy objects
 outFile1 = TemporaryFile()
-np.save('output1_x', x)
+np.save('train_x', trX)
 
 outFile2 = TemporaryFile()
-np.save('output1_y', y)
+np.save('train_y', trY)
+
+outFile1 = TemporaryFile()
+np.save('test_x', tsX)
+
+outFile2 = TemporaryFile()
+np.save('test_y', tsY)
+
+
 
 #master = splitMasterPatient(x, y, 60)
 #print(master)
@@ -293,7 +293,6 @@ data_x = trX
 data_y = trY
 train_x = np.array(data_x)
 train_y = np.array(data_y)
-<<<<<<< HEAD
 
 test_x = np.array(tsX)
 test_y = np.array(tsY)
@@ -305,8 +304,6 @@ test_y = np.array(tsY)
 #print(train_x.shape)
 #print(train_y.shape)
 
-=======
->>>>>>> master
 
 samples = train_x
 for i in range(len(train_x)):
@@ -319,6 +316,7 @@ print(train_x[10].shape)
 print(train_y[1])
 print(test_x.shape)
 
+'''
 !wget https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip
 !unzip ngrok-stable-linux-amd64.zip
 
@@ -332,6 +330,7 @@ get_ipython().system_raw('./ngrok http 6006 &')
 
 ! curl -s http://localhost:4040/api/tunnels | python3 -c \
     "import sys, json; print(json.load(sys.stdin)['tunnels'][0]['public_url'])"
+'''
 
 '''
 CNN based from "Deep LEarning with Convolutional Neural Network for Objective Skill Evaluation
@@ -405,7 +404,7 @@ with tf.Session() as sess:
         c = sess.run(net.loss, feed_dict={net.X: train_x, net.Y: train_y})
         acc = sess.run(net.accuracy, feed_dict={net.X: train_x, net.Y: train_y})
         
-        summary_test, acc2 = sess.run([merge, net.accuracy], feed_dict={net.X: test_x, net.Y:test_y})
+        summary_test, test_acc = sess.run([merge, net.accuracy], feed_dict={net.X: test_x, net.Y:test_y})
         test_writer.add_summary(summary_test, epoch)
         print("Epoch:", '%04d' % (epoch+1), "cost=", "{%f}" % c, "accuracy=", "{%f}" % acc, "test_accuracy", "{%f}" % test_acc) 
     
